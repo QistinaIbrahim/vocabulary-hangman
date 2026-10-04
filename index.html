@@ -3,116 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Guess the Vocabulary Word</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+
+            font-family: Arial, Helvetica, sans-serif;
+
             background: #f4f1ea;
             color: #2f2f2f;
+
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
         }
 
         .game {
-            background: white;
             width: 100%;
-            max-width: 700px;
+            max-width: 750px;
+
+            background: white;
+
             padding: 35px;
+
             border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+
             text-align: center;
         }
 
         h1 {
             margin-top: 0;
+            margin-bottom: 8px;
+
             color: #5c4b3e;
+
             font-size: 32px;
         }
 
         .subtitle {
-            color: #777;
+            margin-top: 0;
             margin-bottom: 25px;
+
+            color: #777;
+
+            font-size: 16px;
         }
+
+        /* HINT */
 
         .hint-box {
             background: #f7f3ed;
-            padding: 15px;
+
+            padding: 16px;
+
             border-radius: 12px;
-            margin-bottom: 25px;
+
+            margin-bottom: 20px;
         }
 
         .hint-title {
             font-weight: bold;
-            margin-bottom: 6px;
+
+            margin-bottom: 7px;
+
+            color: #5c4b3e;
         }
 
-        .word {
-            font-size: 38px;
-            letter-spacing: 12px;
-            font-weight: bold;
-            margin: 30px 0;
-            color: #3d352f;
+        /* HANGMAN */
+
+        .hangman-container {
+            display: flex;
+            justify-content: center;
+
+            margin: 15px 0 20px;
         }
+
+        .gallows {
+            position: relative;
+
+            width: 210px;
+            height: 230px;
+        }
+
+        .gallows-top {
+            position: absolute;
+
+            width: 120px;
+            height: 6px;
+
+            background: #5c4b3e;
+
+            top: 10px;
+            left: 40px;
+        }
+
+        .gallows-pole {
+            position: absolute;
+
+            width: 6px;
+            height: 205px;
+
+            background: #5c4b3e;
+
+            top: 10px;
+            left: 40px;
+        }
+
+        .gallows-base {
+            position: absolute;
+
+            width: 100px;
+            height: 6px;
+
+            background: #5c4b3e;
+
+            bottom: 5px;
+            left: 10px;
+        }
+
+        .rope {
+            position: absolute;
+
+            width: 4px;
+            height: 25px;
+
+            background: #5c4b3e;
+
+            top: 10px;
+            left: 155px;
+        }
+
+        /* HANGMAN BODY PARTS */
+
+        .hangman-part {
+            position: absolute;
+
+            display: none;
+
+            background: #333;
+        }
+
+        .head {
+            width: 48px;
+            height: 48px;
+
+            border: 5px solid #333;
+
+            border-radius: 50%;
+
+            background: transparent;
+
+            top: 35px;
+            left: 133px;
+        }
+
+        .body {
+            width: 5px;
+            height: 70px;
+
+            top: 83px;
+            left: 155px;
+        }
+
+        .left-arm {
+            width: 55px;
+            height: 5px;
+
+            top: 95px;
+            left: 103px;
+
+            transform: rotate(-30deg);
+
+            transform-origin: right center;
+        }
+
+        .right-arm {
+            width: 55px;
+            height: 5px;
+
+            top: 95px;
+            left: 155px;
+
+            transform: rotate(30deg);
+
+            transform-origin: left center;
+        }
+
+        .left-leg {
+            width: 60px;
+            height: 5px;
+
+            top: 145px;
+            left: 101px;
+
+            transform: rotate(-50deg);
+
+            transform-origin: right center;
+        }
+
+        .right-leg {
+            width: 60px;
+            height: 5px;
+
+            top: 145px;
+            left: 154px;
+
+            transform: rotate(50deg);
+
+            transform-origin: left center;
+        }
+
+        /* WORD */
+
+        .word {
+            font-size: 40px;
+
+            letter-spacing: 12px;
+
+            font-weight: bold;
+
+            color: #3d352f;
+
+            margin: 15px 0 25px;
+
+            min-height: 48px;
+        }
+
+        /* INCORRECT GUESSES */
 
         .wrong {
             margin-bottom: 20px;
+
             color: #a04b4b;
+
             font-weight: bold;
         }
+
+        /* LETTER BUTTONS */
 
         .letters {
             display: flex;
+
             flex-wrap: wrap;
+
             justify-content: center;
+
             gap: 8px;
-            margin-top: 20px;
+
+            margin-top: 10px;
         }
 
         .letter {
-            width: 42px;
-            height: 42px;
+            width: 43px;
+            height: 43px;
+
             border: none;
+
             border-radius: 8px;
+
             background: #e5ddd2;
+
             color: #3d352f;
+
             font-weight: bold;
+
             font-size: 16px;
+
             cursor: pointer;
+
+            transition: 0.15s;
         }
 
         .letter:hover:not(:disabled) {
             background: #d2c4b5;
+
+            transform: translateY(-2px);
         }
 
         .letter:disabled {
-            opacity: 0.45;
+            opacity: 0.4;
+
             cursor: not-allowed;
         }
 
+        /* MESSAGE */
+
         .message {
-            min-height: 30px;
+            min-height: 32px;
+
             margin: 25px 0 15px;
+
             font-size: 20px;
+
             font-weight: bold;
         }
 
+        /* PLAY AGAIN */
+
         .play-again {
             display: none;
+
             padding: 12px 25px;
+
             border: none;
+
             border-radius: 10px;
+
             background: #5c4b3e;
+
             color: white;
+
             font-size: 16px;
+
             cursor: pointer;
         }
 
@@ -120,7 +333,14 @@
             background: #44372e;
         }
 
+        /* MOBILE */
+
         @media (max-width: 500px) {
+
+            body {
+                padding: 10px;
+            }
+
             .game {
                 padding: 25px 15px;
             }
@@ -131,16 +351,22 @@
 
             .word {
                 font-size: 28px;
+
                 letter-spacing: 7px;
             }
 
             .letter {
                 width: 36px;
                 height: 36px;
+
+                font-size: 14px;
             }
+
         }
+
     </style>
 </head>
+
 
 <body>
 
@@ -148,43 +374,186 @@
 
     <h1>🎓 Guess the Vocabulary Word</h1>
 
-    <p class="subtitle">Can you guess the word?</p>
+    <p class="subtitle">
+        Test your vocabulary knowledge!
+    </p>
+
+
+    <!-- HINT -->
 
     <div class="hint-box">
-        <div class="hint-title">💡 Hint</div>
-        <div>A typical pattern, model, or way of thinking about something.</div>
+
+        <div class="hint-title">
+            💡 Hint
+        </div>
+
+        <div>
+            A typical pattern, model, or way of thinking about something.
+        </div>
+
     </div>
 
-    <div id="word" class="word"></div>
 
-    <div id="wrong" class="wrong">
+    <!-- HANGMAN -->
+
+    <div class="hangman-container">
+
+        <div class="gallows">
+
+            <div class="gallows-top"></div>
+
+            <div class="gallows-pole"></div>
+
+            <div class="gallows-base"></div>
+
+            <div class="rope"></div>
+
+
+            <!-- HEAD -->
+
+            <div
+                id="head"
+                class="hangman-part head">
+            </div>
+
+
+            <!-- BODY -->
+
+            <div
+                id="body"
+                class="hangman-part body">
+            </div>
+
+
+            <!-- LEFT ARM -->
+
+            <div
+                id="leftArm"
+                class="hangman-part left-arm">
+            </div>
+
+
+            <!-- RIGHT ARM -->
+
+            <div
+                id="rightArm"
+                class="hangman-part right-arm">
+            </div>
+
+
+            <!-- LEFT LEG -->
+
+            <div
+                id="leftLeg"
+                class="hangman-part left-leg">
+            </div>
+
+
+            <!-- RIGHT LEG -->
+
+            <div
+                id="rightLeg"
+                class="hangman-part right-leg">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- WORD -->
+
+    <div
+        id="word"
+        class="word">
+    </div>
+
+
+    <!-- WRONG GUESSES -->
+
+    <div
+        id="wrong"
+        class="wrong">
+
         Incorrect guesses: 0 / 6
+
     </div>
 
-    <div id="letters" class="letters"></div>
 
-    <div id="message" class="message"></div>
+    <!-- LETTERS -->
 
-    <button id="playAgain" class="play-again">
+    <div
+        id="letters"
+        class="letters">
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div
+        id="message"
+        class="message">
+    </div>
+
+
+    <!-- PLAY AGAIN -->
+
+    <button
+        id="playAgain"
+        class="play-again">
+
         🔄 Play Again
+
     </button>
 
 </div>
 
+
 <script>
 
+    /* ==========================
+       GAME SETTINGS
+       ========================== */
+
     const answer = "PARADIGM";
+
     const maxWrong = 6;
 
+
+    /* ==========================
+       GAME VARIABLES
+       ========================== */
+
     let guessedLetters = [];
+
     let wrongGuesses = 0;
+
     let gameOver = false;
 
-    const wordDisplay = document.getElementById("word");
-    const wrongDisplay = document.getElementById("wrong");
-    const lettersContainer = document.getElementById("letters");
-    const messageDisplay = document.getElementById("message");
-    const playAgainButton = document.getElementById("playAgain");
+
+    /* ==========================
+       PAGE ELEMENTS
+       ========================== */
+
+    const wordDisplay =
+        document.getElementById("word");
+
+    const wrongDisplay =
+        document.getElementById("wrong");
+
+    const lettersContainer =
+        document.getElementById("letters");
+
+    const messageDisplay =
+        document.getElementById("message");
+
+    const playAgainButton =
+        document.getElementById("playAgain");
+
+
+    /* ==========================
+       DISPLAY WORD
+       ========================== */
 
     function displayWord() {
 
@@ -193,126 +562,323 @@
         for (let letter of answer) {
 
             if (guessedLetters.includes(letter)) {
+
                 display += letter + " ";
+
             } else {
+
                 display += "_ ";
+
             }
 
         }
 
-        wordDisplay.textContent = display.trim();
+        wordDisplay.textContent =
+            display.trim();
+
     }
+
+
+    /* ==========================
+       CREATE LETTER BUTTONS
+       ========================== */
 
     function createLetters() {
 
         lettersContainer.innerHTML = "";
 
-        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const alphabet =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         for (let letter of alphabet) {
 
-            const button = document.createElement("button");
+            const button =
+                document.createElement("button");
 
             button.textContent = letter;
+
             button.className = "letter";
+
             button.type = "button";
 
-            button.addEventListener("click", function () {
-                guessLetter(letter, button);
-            });
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    guessLetter(
+                        letter,
+                        button
+                    );
+
+                }
+            );
+
 
             lettersContainer.appendChild(button);
+
         }
+
     }
 
-    function guessLetter(letter, button) {
 
-        if (gameOver) return;
+    /* ==========================
+       GUESS LETTER
+       ========================== */
+
+    function guessLetter(
+        letter,
+        button
+    ) {
+
+        if (gameOver) {
+            return;
+        }
+
 
         button.disabled = true;
+
+
+        /* CORRECT GUESS */
 
         if (answer.includes(letter)) {
 
             guessedLetters.push(letter);
+
             displayWord();
 
             checkWin();
 
-        } else {
+        }
+
+
+        /* INCORRECT GUESS */
+
+        else {
 
             wrongGuesses++;
 
-            wrongDisplay.textContent =
-                "Incorrect guesses: " + wrongGuesses + " / " + maxWrong;
+            updateHangman();
 
-            if (wrongGuesses >= maxWrong) {
+            wrongDisplay.textContent =
+                "Incorrect guesses: " +
+                wrongGuesses +
+                " / " +
+                maxWrong;
+
+
+            if (
+                wrongGuesses >= maxWrong
+            ) {
+
                 loseGame();
+
             }
+
         }
+
     }
+
+
+    /* ==========================
+       UPDATE HANGMAN
+       ========================== */
+
+    function updateHangman() {
+
+        const parts = [
+
+            "head",
+
+            "body",
+
+            "leftArm",
+
+            "rightArm",
+
+            "leftLeg",
+
+            "rightLeg"
+
+        ];
+
+
+        parts.forEach(
+            function (part, index) {
+
+                const element =
+                    document.getElementById(part);
+
+
+                if (
+                    wrongGuesses > index
+                ) {
+
+                    element.style.display =
+                        "block";
+
+                } else {
+
+                    element.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ==========================
+       CHECK WIN
+       ========================== */
 
     function checkWin() {
 
-        const completed = answer
-            .split("")
-            .every(letter => guessedLetters.includes(letter));
+        const completed =
+            answer
+                .split("")
+                .every(
+                    function (letter) {
+
+                        return guessedLetters
+                            .includes(letter);
+
+                    }
+                );
+
 
         if (completed) {
 
             gameOver = true;
 
+
             messageDisplay.textContent =
                 "🎉 Excellent! You guessed the word: PARADIGM!";
 
-            messageDisplay.style.color = "#4f7650";
+
+            messageDisplay.style.color =
+                "#4f7650";
+
 
             disableLetters();
 
-            playAgainButton.style.display = "inline-block";
+
+            playAgainButton.style.display =
+                "inline-block";
+
         }
+
     }
+
+
+    /* ==========================
+       LOSE GAME
+       ========================== */
 
     function loseGame() {
 
         gameOver = true;
 
+
         messageDisplay.textContent =
             "❌ Game over! The word was PARADIGM.";
 
-        messageDisplay.style.color = "#a04b4b";
 
-        wordDisplay.textContent = answer;
+        messageDisplay.style.color =
+            "#a04b4b";
+
+
+        wordDisplay.textContent =
+            answer;
+
 
         disableLetters();
 
-        playAgainButton.style.display = "inline-block";
+
+        playAgainButton.style.display =
+            "inline-block";
+
     }
+
+
+    /* ==========================
+       DISABLE LETTERS
+       ========================== */
 
     function disableLetters() {
 
-        const buttons = document.querySelectorAll(".letter");
+        const buttons =
+            document.querySelectorAll(
+                ".letter"
+            );
 
-        buttons.forEach(button => {
-            button.disabled = true;
-        });
+
+        buttons.forEach(
+            function (button) {
+
+                button.disabled = true;
+
+            }
+        );
+
     }
+
+
+    /* ==========================
+       START / RESET GAME
+       ========================== */
 
     function startGame() {
 
         guessedLetters = [];
+
         wrongGuesses = 0;
+
         gameOver = false;
 
+
         wordDisplay.textContent = "";
-        wrongDisplay.textContent = "Incorrect guesses: 0 / 6";
+
+        wrongDisplay.textContent =
+            "Incorrect guesses: 0 / 6";
+
+
         messageDisplay.textContent = "";
-        playAgainButton.style.display = "none";
+
+        messageDisplay.style.color = "";
+
+
+        playAgainButton.style.display =
+            "none";
+
+
+        /* RESET HANGMAN */
+
+        updateHangman();
+
 
         displayWord();
+
         createLetters();
+
     }
 
-    playAgainButton.addEventListener("click", startGame);
+
+    /* ==========================
+       PLAY AGAIN BUTTON
+       ========================== */
+
+    playAgainButton.addEventListener(
+        "click",
+        startGame
+    );
+
+
+    /* ==========================
+       START GAME
+       ========================== */
 
     startGame();
 
