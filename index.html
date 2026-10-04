@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Vocabulary Word</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f1ea;
+            color: #2f2f2f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #5c4b3e;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .hint-box {
+            background: #f7f3ed;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .hint-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .word {
+            font-size: 38px;
+            letter-spacing: 12px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #3d352f;
+        }
+
+        .wrong {
+            margin-bottom: 20px;
+            color: #a04b4b;
+            font-weight: bold;
+        }
+
+        .letters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .letter {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 8px;
+            background: #e5ddd2;
+            color: #3d352f;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .letter:hover:not(:disabled) {
+            background: #d2c4b5;
+        }
+
+        .letter:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .message {
+            min-height: 30px;
+            margin: 25px 0 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .play-again {
+            display: none;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            background: #5c4b3e;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .play-again:hover {
+            background: #44372e;
+        }
+
+        @media (max-width: 500px) {
+            .game {
+                padding: 25px 15px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .word {
+                font-size: 28px;
+                letter-spacing: 7px;
+            }
+
+            .letter {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <h1>🎓 Guess the Vocabulary Word</h1>
+
+    <p class="subtitle">Can you guess the word?</p>
+
+    <div class="hint-box">
+        <div class="hint-title">💡 Hint</div>
+        <div>A typical pattern, model, or way of thinking about something.</div>
+    </div>
+
+    <div id="word" class="word"></div>
+
+    <div id="wrong" class="wrong">
+        Incorrect guesses: 0 / 6
+    </div>
+
+    <div id="letters" class="letters"></div>
+
+    <div id="message" class="message"></div>
+
+    <button id="playAgain" class="play-again">
+        🔄 Play Again
+    </button>
+
+</div>
+
+<script>
+
+    const answer = "PARADIGM";
+    const maxWrong = 6;
+
+    let guessedLetters = [];
+    let wrongGuesses = 0;
+    let gameOver = false;
+
+    const wordDisplay = document.getElementById("word");
+    const wrongDisplay = document.getElementById("wrong");
+    const lettersContainer = document.getElementById("letters");
+    const messageDisplay = document.getElementById("message");
+    const playAgainButton = document.getElementById("playAgain");
+
+    function displayWord() {
+
+        let display = "";
+
+        for (let letter of answer) {
+
+            if (guessedLetters.includes(letter)) {
+                display += letter + " ";
+            } else {
+                display += "_ ";
+            }
+
+        }
+
+        wordDisplay.textContent = display.trim();
+    }
+
+    function createLetters() {
+
+        lettersContainer.innerHTML = "";
+
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        for (let letter of alphabet) {
+
+            const button = document.createElement("button");
+
+            button.textContent = letter;
+            button.className = "letter";
+            button.type = "button";
+
+            button.addEventListener("click", function () {
+                guessLetter(letter, button);
+            });
+
+            lettersContainer.appendChild(button);
+        }
+    }
+
+    function guessLetter(letter, button) {
+
+        if (gameOver) return;
+
+        button.disabled = true;
+
+        if (answer.includes(letter)) {
+
+            guessedLetters.push(letter);
+            displayWord();
+
+            checkWin();
+
+        } else {
+
+            wrongGuesses++;
+
+            wrongDisplay.textContent =
+                "Incorrect guesses: " + wrongGuesses + " / " + maxWrong;
+
+            if (wrongGuesses >= maxWrong) {
+                loseGame();
+            }
+        }
+    }
+
+    function checkWin() {
+
+        const completed = answer
+            .split("")
+            .every(letter => guessedLetters.includes(letter));
+
+        if (completed) {
+
+            gameOver = true;
+
+            messageDisplay.textContent =
+                "🎉 Excellent! You guessed the word: PARADIGM!";
+
+            messageDisplay.style.color = "#4f7650";
+
+            disableLetters();
+
+            playAgainButton.style.display = "inline-block";
+        }
+    }
+
+    function loseGame() {
+
+        gameOver = true;
+
+        messageDisplay.textContent =
+            "❌ Game over! The word was PARADIGM.";
+
+        messageDisplay.style.color = "#a04b4b";
+
+        wordDisplay.textContent = answer;
+
+        disableLetters();
+
+        playAgainButton.style.display = "inline-block";
+    }
+
+    function disableLetters() {
+
+        const buttons = document.querySelectorAll(".letter");
+
+        buttons.forEach(button => {
+            button.disabled = true;
+        });
+    }
+
+    function startGame() {
+
+        guessedLetters = [];
+        wrongGuesses = 0;
+        gameOver = false;
+
+        wordDisplay.textContent = "";
+        wrongDisplay.textContent = "Incorrect guesses: 0 / 6";
+        messageDisplay.textContent = "";
+        playAgainButton.style.display = "none";
+
+        displayWord();
+        createLetters();
+    }
+
+    playAgainButton.addEventListener("click", startGame);
+
+    startGame();
+
+</script>
+
+</body>
+</html>
